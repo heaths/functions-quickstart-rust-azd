@@ -1,0 +1,17 @@
+[package]
+name = "functions-quickstart-rust-azd"
+version = "1.0.0"
+description = "Azure Functions Quick Start in Rust for Azure Developer ClI"
+edition = "2021"
+rust-version = "1.82"
+publish = false
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
+
+[[bin]]
+name = "handler"
+path = "src/main.rs"

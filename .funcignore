@@ -1,0 +1,10 @@
+.cargo/
+.git*
+target/
+.vscode/
+__azurite_db*__.json
+__blobstorage__
+__queuestorage__
+Cargo.*
+local.settings.json
+rust-toolchain.toml
