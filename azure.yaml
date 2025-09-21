@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: functions-quickstart-rust-azd
+metadata:
+  template: functions-quickstart-rust-azd@0.1.0
+services:
+  api:
+    project: .
+    language: docker
+    host: containerapp
