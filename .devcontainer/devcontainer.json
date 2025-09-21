@@ -1,13 +1,14 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/rust:1-bullseye",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": [
+    "--platform=linux/amd64"
+  ],
   "features": {
     "ghcr.io/azure/azure-dev/azd:0": {},
     "ghcr.io/devcontainers/features/azure-cli:1": {
       "installBicep": true
-    },
-    "ghcr.io/devcontainers/features/dotnet:2": {},
-    "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
-      "version": "4"
     }
   },
   "customizations": {
@@ -16,7 +17,10 @@
         "ms-azuretools.vscode-azurefunctions",
         "rust-lang.rust-analyzer",
         "vadimcn.vscode-lldb"
-      ]
+      ],
+      "settings": {
+        "rust-analyzer.server.path": "/usr/local/cargo/bin/rust-analyzer"
+      }
     }
   },
   "postCreateCommand": "rustup install"
