@@ -7,4 +7,5 @@ services:
   api:
     project: .
     language: docker
-    host: containerapp
+    host: function
+    dist: target/release/handler
