@@ -1,9 +1,0 @@
-.DS_Store
-/.azure
-/.devcontainer
-/.vscode
-/infra
-/target
-.azure
-local.settings.json
-*.md

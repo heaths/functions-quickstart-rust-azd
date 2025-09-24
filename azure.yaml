@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vhvb1989/azure-dev/2afd6222826dd174644362611df12e6f512719f2/schemas/v1.0/azure.yaml.json
 
 name: functions-quickstart-rust-azd
 metadata:
@@ -6,6 +6,21 @@ metadata:
 services:
   api:
     project: .
-    language: docker
+    # Requires https://github.com/Azure/azure-dev/pull/5771
+    language: custom
     host: function
-    dist: target/release/handler
+    dist: deploy.zip
+    hooks:
+      predeploy:
+        posix:
+          shell: sh
+          interactive: true
+          run: |
+            cargo build --release --target x86_64-unknown-linux-musl
+            zip deploy.zip host.json hello/*.json target/x86_64-unknown-linux-musl/release/handler
+        windows:
+          shell: pwsh
+          interactive: true
+          run: |
+            cargo build --release --target x86_64-unknown-linux-musl
+            Compress-Archive -DestinationPath deploy.zip -Path host.json, hello/, target/x86_64-unknown-linux-musl/release/handler -Force

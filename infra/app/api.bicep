@@ -1,5 +1,5 @@
 param name string
-@description('Primary location for all resources & Flex Consumption Function App')
+@description('Primary location for all resources & Consumption Function App')
 param location string = resourceGroup().location
 param tags object = {}
 param applicationInsightsName string = ''
@@ -9,6 +9,7 @@ param runtimeName string
 param runtimeVersion string
 param serviceName string = 'api'
 param storageAccountName string
+param storageAccountResourceId string
 param deploymentStorageContainerName string
 param virtualNetworkSubnetId string = ''
 param instanceMemoryMB int = 2048
@@ -54,9 +55,9 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing
   name: applicationInsightsName
 }
 
-// Create a Flex Consumption Function App to host the API
+// Create a Consumption Function App to host the API
 module api 'br/public:avm/res/web/site:0.15.1' = {
-  name: '${serviceName}-flex-consumption'
+  name: '${serviceName}-consumption'
   params: {
     kind: kind
     name: name
@@ -69,28 +70,31 @@ module api 'br/public:avm/res/web/site:0.15.1' = {
         '${identityId}'
       ]
     }
-    functionAppConfig: {
-      deployment: {
-        storage: {
-          type: 'blobContainer'
-          value: '${stg.properties.primaryEndpoints.blob}${deploymentStorageContainerName}'
-          authentication: {
-            type: identityType == 'SystemAssigned' ? 'SystemAssignedIdentity' : 'UserAssignedIdentity'
-            userAssignedIdentityResourceId: identityType == 'UserAssigned' ? identityId : ''
-          }
-        }
-      }
-      scaleAndConcurrency: {
-        instanceMemoryMB: instanceMemoryMB
-        maximumInstanceCount: maximumInstanceCount
-      }
-      runtime: {
-        name: runtimeName
-        version: runtimeVersion
-      }
-    }
+    // functionAppConfig: {
+    //   deployment: {
+    //     storage: {
+    //       type: 'blobContainer'
+    //       value: '${stg.properties.primaryEndpoints.blob}${deploymentStorageContainerName}'
+    //       authentication: {
+    //         type: identityType == 'SystemAssigned' ? 'SystemAssignedIdentity' : 'UserAssignedIdentity'
+    //         userAssignedIdentityResourceId: identityType == 'UserAssigned' ? identityId : ''
+    //       }
+    //     }
+    //   }
+    //   scaleAndConcurrency: {
+    //     instanceMemoryMB: instanceMemoryMB
+    //     maximumInstanceCount: maximumInstanceCount
+    //   }
+    //   runtime: {
+    //     name: runtimeName
+    //     version: runtimeVersion
+    //   }
+    // }
+    storageAccountResourceId: storageAccountResourceId
     siteConfig: {
       alwaysOn: false
+      linuxFxVersion: ''
+      minTlsVersion: '1.2'
     }
     virtualNetworkSubnetId: !empty(virtualNetworkSubnetId) ? virtualNetworkSubnetId : null
     appSettingsKeyValuePairs: allAppSettings
