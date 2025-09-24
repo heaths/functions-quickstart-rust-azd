@@ -11,13 +11,16 @@ services:
     host: function
     dist: deploy.zip
     hooks:
-      prebuild:
-        shell: sh
-        run: cargo build --release --target x86_64-unknown-linux-musl
-      prepackage:
+      predeploy:
         posix:
           shell: sh
-          run: zip deploy.zip host.json hello/*.json target/x86_64-unknown-linux-musl/release/handler
+          interactive: true
+          run: |
+            cargo build --release --target x86_64-unknown-linux-musl
+            zip deploy.zip host.json hello/*.json target/x86_64-unknown-linux-musl/release/handler
         windows:
           shell: pwsh
-          run: Compress-Archive -DestinationPath deploy.zip -Path host.json, hello/, target/x86_64-unknown-linux-musl/release/handler -Force
+          interactive: true
+          run: |
+            cargo build --release --target x86_64-unknown-linux-musl
+            Compress-Archive -DestinationPath deploy.zip -Path host.json, hello/, target/x86_64-unknown-linux-musl/release/handler -Force

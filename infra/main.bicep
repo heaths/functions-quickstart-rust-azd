@@ -6,7 +6,7 @@ targetScope = 'subscription'
 param environmentName string
 
 @minLength(1)
-@description('Primary location for all resources & Flex Consumption Function App')
+@description('Primary location for all resources & Consumption Function App')
 @allowed([
   'australiaeast'
   'australiasoutheast'
@@ -93,9 +93,10 @@ module appServicePlan 'br/public:avm/res/web/serverfarm:0.1.1' = {
   params: {
     name: !empty(appServicePlanName) ? appServicePlanName : '${abbrs.webServerFarms}${resourceToken}'
     sku: {
-      name: 'FC1'
-      tier: 'FlexConsumption'
+      name: 'Y1'
+      tier: 'Dynamic'
     }
+    kind: 'Linux'
     reserved: true
     location: location
     tags: tags
@@ -111,16 +112,20 @@ module api './app/api.bicep' = {
     tags: tags
     applicationInsightsName: monitoring.outputs.name
     appServicePlanId: appServicePlan.outputs.resourceId
-    runtimeName: 'node'
-    runtimeVersion: '22'
+    runtimeName: 'dotnet-isolated'
+    runtimeVersion: '8.0'
     storageAccountName: storage.outputs.name
+    storageAccountResourceId: storage.outputs.resourceId
     enableBlob: storageEndpointConfig.enableBlob
     enableQueue: storageEndpointConfig.enableQueue
     enableTable: storageEndpointConfig.enableTable
     deploymentStorageContainerName: deploymentStorageContainerName
     identityId: apiUserAssignedIdentity.outputs.resourceId
     identityClientId: apiUserAssignedIdentity.outputs.clientId
-    appSettings: {}
+    appSettings: {
+      FUNCTIONS_WORKER_RUNTIME: 'custom'
+      FUNCTIONS_EXTENSION_VERSION: '~4'
+    }
     virtualNetworkSubnetId: vnetEnabled ? serviceVirtualNetwork!.outputs.appSubnetID : ''
   }
 }
